@@ -23,12 +23,6 @@ import matplotlib.pyplot as plt
 
 # parse csv
 toxic_comments = pd.read_csv("toxic_comments.csv")
-<<<<<<< HEAD
-filter = toxic_comments["comment_text"] != ""
-toxic_comments = toxic_comments[filter]
-toxic_comments = toxic_comments.dropna()
-
-=======
 # remove empty strings
 filter = toxic_comments["comment_text"] != ""
 toxic_comments = toxic_comments[filter]
@@ -36,7 +30,6 @@ toxic_comments = toxic_comments[filter]
 toxic_comments = toxic_comments.dropna()
 
 # Set labels on Pandas DataFrame
->>>>>>> afd3e87b690cc0f8a9dd9080e7c3b17bf21aff66
 toxic_comments_labels = toxic_comments[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]]
 toxic_comments_labels.head()
 
