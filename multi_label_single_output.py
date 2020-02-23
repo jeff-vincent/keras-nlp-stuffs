@@ -22,6 +22,12 @@ import re
 import matplotlib.pyplot as plt
 
 toxic_comments = pd.read_csv("toxic_comments.csv")
+filter = toxic_comments["comment_text"] != ""
+toxic_comments = toxic_comments[filter]
+toxic_comments = toxic_comments.dropna()
+
+toxic_comments_labels = toxic_comments[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]]
+toxic_comments_labels.head()
 
 def preprocess_text(sen):
     # Remove punctuations and numbers
