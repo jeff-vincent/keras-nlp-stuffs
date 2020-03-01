@@ -34,34 +34,40 @@ for tagged_sentence in tagged_sentences:
  test_tags) = train_test_split(sentences, sentence_tags, test_size=0.2)
 
 words, tags = set([]), set([])
- 
+# add words to set
 for s in train_sentences:
     for w in s:
         words.add(w.lower())
- 
+	
+# add tags to set
 for ts in train_tags:
     for t in ts:
         tags.add(t)
- 
+	
+# armed with a set => list of all words in the training corpus
+# generate a dict of index & associated word
 word2index = {w: i + 2 for i, w in enumerate(list(words))}
 word2index['-PAD-'] = 0  # The special value used for padding
 word2index['-OOV-'] = 1  # The special value used for OOVs
  
+# dict of tags
 tag2index = {t: i + 1 for i, t in enumerate(list(tags))}
 tag2index['-PAD-'] = 0  # The special value used to padding
 
-
+# make lists
 train_sentences_X, test_sentences_X = [], []
 train_tags_y, test_tags_y = [], []
  
+# iterate over sententences
 for s in train_sentences:
-    s_int = []
+	
+    s_int = [] # create s_int list
     for w in s:
         try:
-            s_int.append(word2index[w.lower()])
+            s_int.append(word2index[w.lower()]) # append list of lists -- each containing a single dict
         except KeyError:
             s_int.append(word2index['-OOV-'])
- 
+# append list of sdict
     train_sentences_X.append(s_int)
  
 for s in test_sentences:
@@ -80,9 +86,9 @@ for s in train_tags:
 for s in test_tags:
     test_tags_y.append([tag2index[t] for t in s])
 
-	
+# identify longest sentence
 MAX_LENGTH = len(max(train_sentences_X, key=len))
-
+# pad to equalize varying lengths
 train_sentences_X = pad_sequences(train_sentences_X, 
 maxlen=MAX_LENGTH, padding='post')
 test_sentences_X = pad_sequences(test_sentences_X, 
@@ -92,11 +98,33 @@ maxlen=MAX_LENGTH, padding='post')
 test_tags_y = pad_sequences(test_tags_y, 
 maxlen=MAX_LENGTH, padding='post')
 
+# define model
 model = Sequential()
+
+# define layer 
+# NOTE: `input_shape` = This is a shape tuple 
+# (a tuple of integers or None entries, where 
+# None indicates that any positive integer may be expected).
+# In input_shape, the batch dimension is not included.
 model.add(InputLayer(input_shape=(MAX_LENGTH, )))
+
+
+# define layer
+# NOTE: Turns positive integers (indexes)
+# into dense vectors of fixed size. 
+# eg. [[4], [20]] -> [[0.25, 0.1], [0.6, -0.2]]
+# NOTE: This layer can only be used as the first layer in a model.
+This layer can only be used as the first layer in a model.
 model.add(Embedding(len(word2index), 128))
+
+# long short term memory
+# 
 model.add(Bidirectional(LSTM(256, return_sequences=True)))
+# dense layer
+# Hidden Lots of _densely_ interconnected nodes... 
+# NOTE: https://github.com/keras-team/keras/blob/master/keras/layers/wrappers.py#L116
 model.add(TimeDistributed(Dense(len(tag2index))))
+# softmax activation function
 model.add(Activation('softmax'))
  
 model.compile(loss='categorical_crossentropy',
@@ -104,6 +132,8 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
  
 model.summary()
+
+# conceptual break ----------------------------------------------------------
 
 def to_categorical(sequences, categories):
     cat_sequences = []
